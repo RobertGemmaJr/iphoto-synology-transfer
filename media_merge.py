@@ -3,8 +3,12 @@ import os
 import datetime
 import shutil
 
+PHOTO_DIR = "/Users/me/photo_export"
 
-def renameDateFiles(dir):
+VIDEO_DIR = "/Users/me/video_export"
+
+
+def rename_date_files(dir):
     for entry in os.scandir(dir):
         if os.path.isdir(entry):
             print(entry.name)
@@ -39,7 +43,7 @@ def renameDateFiles(dir):
             os.rename(os.path.join(entry.path), os.path.join(dir, final))
 
 
-def mergefolders(root_src_dir, root_dst_dir):
+def merge_folders(root_src_dir, root_dst_dir):
     for src_dir, dirs, files in os.walk(root_src_dir):
         dst_dir = src_dir.replace(root_src_dir, root_dst_dir, 1)
         if not os.path.exists(dst_dir):
@@ -55,9 +59,10 @@ def mergefolders(root_src_dir, root_dst_dir):
             shutil.copy(src_file, dst_dir)
 
 
-photo = "/Users/me/photo_export"
-
-video = "/Users/me/video_export"
-
-mergefolders(video, photo)
-renameDateFiles(photo)
+def main():
+    print("RUN")
+    # merge_folders(VIDEO_DIR, PHOTO_DIR)
+    # rename_date_files(PHOTO_DIR)
+    
+if __name__ == "__main__":
+    main()
