@@ -3,66 +3,39 @@ import os
 import datetime
 import shutil
 
-PHOTO_DIR = "/Users/me/photo_export"
+import exifread
+import win32com.client
+from pathlib import Path
+from PIL import Image
+from PIL.ExifTags import TAGS
 
-VIDEO_DIR = "/Users/me/video_export"
-
-
-def rename_date_files(dir):
-    for entry in os.scandir(dir):
-        if os.path.isdir(entry):
-            print(entry.name)
-            
-            # Handles rereading of changed folders
-            matched = re.match("[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}[,]?", entry.name)
-
-            if bool(matched):
-                continue
-
-            list = entry.name.split(",")
-            length = len(list)
-            md = list[length - 2]
-            y = list[length - 1]
-            loc = ""
-
-            for i in range(0, length - 2):
-                loc += list[i]
-                loc += " "
-
-            y = y.strip(" ")
-            md = md.lstrip(" ")
-            mdl = md.split(" ")
-            m = mdl[0]
-            d = mdl[1]
-
-            mon_num = datetime.datetime.strptime(m, "%B").month
-            final = y + "-" + str(mon_num) + "-" + d
-            if loc != "":
-                final += ", " + loc
-
-            os.rename(os.path.join(entry.path), os.path.join(dir, final))
-
-
-def merge_folders(root_src_dir, root_dst_dir):
-    for src_dir, dirs, files in os.walk(root_src_dir):
-        dst_dir = src_dir.replace(root_src_dir, root_dst_dir, 1)
-        if not os.path.exists(dst_dir):
-            os.makedirs(dst_dir)
-
-        for file_ in files:
-            src_file = os.path.join(src_dir, file_)
-            dst_file = os.path.join(dst_dir, file_)
-
-            if os.path.exists(dst_file):
-                os.remove(dst_file)
-
-            shutil.copy(src_file, dst_dir)
+MEDIA_DIR = Path(Path.home(), "Desktop", "Rob Photos (temp)")
+METADATA = ["Name", "Size", "Item type", "Date modified", "Date taken"]
 
 
 def main():
-    print("RUN")
-    # merge_folders(VIDEO_DIR, PHOTO_DIR)
-    # rename_date_files(PHOTO_DIR)
+    dir = Path(MEDIA_DIR, "Photos")
+    file = "1.jpeg"
     
+    # Loop over all photos
+    # Extract datetime
+    # Extract year, month
+    # Create year, month folder (Inside "Rob Photos (temp)") if it doesn't exist
+    # Copy file to that folder
+    # Loop over all videos, do the same
+
+    # Pillow image metatdata
+    image = Image.open(f"{dir}/{file}")
+    imageData = image.getexif()
+        
+    exif = { TAGS[k]: v for k, v in imageData.items() if k in TAGS }
+    print(exif)
+    for tag, data in exif.items():
+        # Decode bytes 
+        if isinstance(data, bytes): data = data.decode()
+        print(f"{tag:15}: {data}")
+        
+
+
 if __name__ == "__main__":
     main()
