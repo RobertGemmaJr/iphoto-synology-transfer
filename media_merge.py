@@ -45,26 +45,27 @@ def main():
     # TODO: 1.jpeg is wrong, save correct DateTime
     assert Path.exists(DIR)
 
-    fileDict: dict[str, datetime.date] = {}
+    fileDict: dict[Path, datetime.date] = {}
     get_photos(fileDict)
     get_videos(fileDict)
 
     # Create output directory (forced)
     dest = Path(DIR, "out")
-    if Path.exists(dest):
-        shutil.rmtree(dest)
-    os.mkdir(dest)
+    dest.mkdir(parents=True, exist_ok=True)
     assert Path.exists(dest)
 
-    for path, date in fileDict.items():
-        print(f"{path} {date.year} {date.month}")
-        year = str(date.year)
-        month = str(date.month)
-        # Create year/ if not created
-        # Create year/month/ if not created
-        # Path(dest, year).mkdir(parents=True, exist_ok=True)
-        Path(dest, year, month).mkdir(parents=True, exist_ok=True)
+    for file, date in fileDict.items():
+        # Create out/[year]/[month]/ folder
+        out = Path(dest, str(date.year), str(date.month))
+        out.mkdir(parents=True, exist_ok=True)
+        assert Path.exists(out)
+        
+        # Move file to the new path
+        print(file, Path(out, file.name))
+        # shutil.move()
+        # TODO: Delete empty directories in old path?
+        # TODO: Rename each individual folder numerically
 
-
+# TODO: De
 if __name__ == "__main__":
     main()
