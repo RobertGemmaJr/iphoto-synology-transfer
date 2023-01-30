@@ -1,4 +1,3 @@
-import os
 import shutil
 import datetime
 import ffmpeg
@@ -40,6 +39,21 @@ def get_videos(fileDict: dict):
                 print("FAILED:", file)
     return fileDict
 
+# Copy files into year/month folders, renamed 1 through n
+def copy_files(fileDict: dict,dest: Path):
+    count = 1
+    for file, date in sorted(fileDict.items(), key=lambda kv: kv[1]):
+        
+        # Create out/[year]/[month]/ folder
+        out = Path(dest, str(date.year), str(date.month))
+        out.mkdir(parents=True, exist_ok=True)
+        assert Path.exists(out)
+        
+        # Copy file to the new path
+        print(count, date, file, Path(out, str(count) + file.suffix))
+        shutil.copy2(file, Path(out, str(count) + file.suffix))
+        count += 1
+
 
 def main():
     # TODO: 1.jpeg is wrong, save correct DateTime
@@ -53,19 +67,9 @@ def main():
     dest = Path(DIR, "out")
     dest.mkdir(parents=True, exist_ok=True)
     assert Path.exists(dest)
+    
+    copy_files(fileDict, dest)
+    
 
-    for file, date in fileDict.items():
-        # Create out/[year]/[month]/ folder
-        out = Path(dest, str(date.year), str(date.month))
-        out.mkdir(parents=True, exist_ok=True)
-        assert Path.exists(out)
-        
-        # Move file to the new path
-        print(file, Path(out, file.name))
-        # shutil.move()
-        # TODO: Delete empty directories in old path?
-        # TODO: Rename each individual folder numerically
-
-# TODO: De
 if __name__ == "__main__":
     main()
